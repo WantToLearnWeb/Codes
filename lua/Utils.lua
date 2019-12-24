@@ -1,6 +1,6 @@
 Utils = {}
 
-function Utils.Serialize(obj)
+local function serialize(obj)
     local str = ''
     local t = type(obj)
     if t == 'number' then
@@ -10,19 +10,23 @@ function Utils.Serialize(obj)
     elseif t == 'string' then
         str = str .. string.format('%q', obj)
     elseif t == 'table' then
-        str = str .. '{\n'
+        str = str .. '{'
         for k, v in pairs(obj) do
-            str = str .. '[' .. Utils.Serialize(k) .. '] = ' .. Utils.Serialize(v) .. ',\n'
+            str = str .. '[' .. serialize(k) .. '] = ' .. serialize(v) .. ','
         end
         local metatable = getmetatable(obj)
         if metatable ~= nil and type(metatable.__index) == table then
             for k, v in pairs(metatable.__index) do
-                str = str .. '[' .. Utils.Serialize(k) .. '] = ' .. Utils.Serialize(v) .. ',\n'
+                str = str .. '[' .. serialize(k) .. '] = ' .. serialize(v) .. ','
             end
         end
         str = str .. '}'
     end
     return str
+end
+
+function Utils.Serialize(obj)
+    return serialize(obj)
 end
 
 function Utils.Deserialize(str)
